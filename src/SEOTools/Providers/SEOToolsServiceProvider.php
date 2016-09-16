@@ -34,6 +34,26 @@ class SEOToolsServiceProvider extends ServiceProvider
         }
 
         $this->mergeConfigFrom($configFile, 'seotools');
+
+        $requireI18nConfigName = array(
+                'seotools.meta.defaults.title',
+                'seotools.meta.defaults.description',
+                'seotools.meta.defaults.keywords',
+                'opengraph.defaults.title',
+                'opengraph.defaults.description',
+                'opengraph.defaults.site_name',
+        );
+
+        foreach ($requireI18nConfigName as $configName){
+            $configData = $this->app['config']->get($configName);
+            if( is_string($configData) ){
+                $this->app['config']->set($configName, __($configData));
+            } elseif (is_array($configData)) {
+                $this->app['config']->set($configName,
+                        array_map(function($text){return __($text);}, $configData));
+            }
+        }
+
     }
 
     /**
